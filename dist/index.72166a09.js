@@ -140,9 +140,9 @@
       this[globalName] = mainExports;
     }
   }
-})({"4Ts1w":[function(require,module,exports) {
+})({"2FQzm":[function(require,module,exports) {
 var HMR_HOST = null;
-var HMR_PORT = 64299;
+var HMR_PORT = 1234;
 var HMR_SECURE = false;
 var HMR_ENV_HASH = "d751713988987e9331980363e24189ce";
 module.bundle.HMR_BUNDLE_ID = "c75227167347e57df55b258c72166a09";
@@ -444,7 +444,9 @@ id) /*: string*/
 },{}],"5XPnV":[function(require,module,exports) {
 var _PopUpWidget = require("./PopUpWidget");
 console.log("App is loaded.");
-const popup = new _PopUpWidget.BtnWidget();
+const popup = new _PopUpWidget.BtnWidget({
+  position: 'bottom-right'
+});
 
 },{"./PopUpWidget":"1gK9a"}],"1gK9a":[function(require,module,exports) {
 var _parcelHelpers = require("@parcel/transformer-js/lib/esmodule-helpers.js");
@@ -490,6 +492,8 @@ class BtnWidget {
     this.createMessageContainerContent();
     buttonContainer.appendChild(this.chatIcon);
     buttonContainer.appendChild(this.closeIcon);
+    // Add toggle event
+    buttonContainer.addEventListener('click', this.toggleOpen.bind(this));
     container.appendChild(this.messageContainer);
     container.appendChild(buttonContainer);
   }
@@ -533,6 +537,14 @@ class BtnWidget {
     color: #fff;
     background-color: #04b73f
    }
+   .message-container .content {
+    margin: 20px 10px;
+    border: 1px solid #dbdbdb;
+    padding: 10px;
+    display: flex;
+    background-color: #fff;
+    flex-direction:column
+   }
    .message-container form * {
     margin: 5px 0;
    }
@@ -548,7 +560,7 @@ class BtnWidget {
    }
    .message-container form button {
     cursor: pointer;
-    background-color: #4b73f;
+    background-color: #04b73f;
     color: #fff;
     border: 0;
     border-radius: 4px;
@@ -583,7 +595,51 @@ class BtnWidget {
     this.messageContainer.appendChild(title);
     this.messageContainer.appendChild(form);
   }
-  submit() {}
+  insertParam(key, value) {
+    key = encodeURIComponent(key);
+    value = encodeURIComponent(value);
+    // kvp looks like ['key1=value1', 'key2=value2', ...]
+    var kvp = document.location.search.substr(1).split('&');
+    let i = 0;
+    for (; i < kvp.length; i++) {
+      if (kvp[i].startsWith(key + '=')) {
+        let pair = kvp[i].split('=');
+        pair[1] = value;
+        kvp[i] = pair.join('=');
+        break;
+      }
+    }
+    if (i >= kvp.length) {
+      kvp[kvp.length] = [key, value].join('=');
+    }
+    // can return this or...
+    let params = kvp.join('&');
+    // reload page with new params
+    document.location.search = params;
+  }
+  submit(e) {
+    e.preventDefault();
+    const formSubmission = {
+      email: e.srcElement.querySelector('#email').value,
+      message: e.srcElement.querySelector('#message').value
+    };
+    this.insertParam(formSubmission.email, 10);
+    console.log(formSubmission);
+    this.messageContainer.innerHTML = `<h2>Thanks for your submission, someone will be in contact shortly.</h2>`;
+  }
+  toggleOpen() {
+    this.open = !this.open;
+    if (this.open) {
+      this.chatIcon.classList.add('hidden');
+      this.closeIcon.classList.remove('hidden');
+      this.messageContainer.classList.remove('hidden');
+    } else {
+      this.createMessageContainerContent();
+      this.chatIcon.classList.remove('hidden');
+      this.closeIcon.classList.add('hidden');
+      this.messageContainer.classList.add('hidden');
+    }
+  }
 }
 
 },{"@parcel/transformer-js/lib/esmodule-helpers.js":"5gA8y"}],"5gA8y":[function(require,module,exports) {
@@ -628,6 +684,6 @@ exports.export = function (dest, destName, get) {
     get: get
   });
 };
-},{}]},["4Ts1w","5XPnV"], "5XPnV", "parcelRequire5133")
+},{}]},["2FQzm","5XPnV"], "5XPnV", "parcelRequire5133")
 
 //# sourceMappingURL=index.72166a09.js.map
